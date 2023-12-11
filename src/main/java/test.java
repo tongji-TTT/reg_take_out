@@ -1,2 +1,5 @@
-public class test {
+public class test
+{
+  int a=10;
+
 }
