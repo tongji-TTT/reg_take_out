@@ -29,9 +29,8 @@ public class Swagger3Config {
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("在线考试接口文档")
-                .description("在线考试接口文档")
-                .contact(new Contact("jeffcail", "https://blog.caixiaoxin.cn/", "XXXXXX@qq.com"))
+                .title("瑞吉外卖文档")
+                .description("瑞吉外卖文档")
                 .version("1.0")
                 .build();
     }
