@@ -14,5 +14,7 @@ public class EmployeeController {
 
     @Autowired
     private EmployeeService employeeService;
+    @RequestMapping("/test")
+    public int test(){return 1;}
 
 }
