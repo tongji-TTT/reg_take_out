@@ -1,7 +1,7 @@
 package demo.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import demo.common.R;
+import demo.common.*;
 import demo.entity.Employee;
 import demo.serivce.EmployeeService;
 import demo.serivce.Impl.EmployeeServiceImpl;
@@ -61,6 +61,14 @@ public class EmployeeController {
         request.getSession().setAttribute("employee",emp.getId());
         return R.success(emp);
 
+    }
+
+    @PostMapping("/logout")
+    public R<String> logout(HttpServletRequest request)
+    {
+        request.getSession().removeAttribute("employee");
+
+        return R.success("推出成功");
     }
 
 
