@@ -44,19 +44,19 @@ public class LoginCheckFilter implements Filter {
         //判断本次请求是否需要处理
         boolean check = check(urls,requestURL);
         if(check){
-            log.info("放行URL:{}",requestURL);
+            //log.info("放行URL:{}",requestURL);
             filterChain.doFilter(request,response);
             return;
         }
         //判断登陆状态
-        log.info("判断URL:{}",requestURL);
+        //log.info("判断URL:{}",requestURL);
 
         if(request.getSession().getAttribute("employee") != null){
-            log.info("已登入，用户id为:{}",request.getSession().getAttribute("employee"));
+            //log.info("已登入，用户id为:{}",request.getSession().getAttribute("employee"));
             filterChain.doFilter(request,response);
             return;
         }
-        log.info("not login");
+        //log.info("not login");
         response.getWriter().write(JSON.toJSONString(R.error("NOT LOGIN")));
         return;
     }

@@ -1,6 +1,8 @@
 package demo.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import demo.common.*;
 import demo.entity.Employee;
 import demo.serivce.EmployeeService;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 
 @Slf4j
 @RestController
@@ -63,13 +66,87 @@ public class EmployeeController {
 
     }
 
+    /*
+    退出账号
+     */
     @PostMapping("/logout")
     public R<String> logout(HttpServletRequest request)
     {
         request.getSession().removeAttribute("employee");
 
-        return R.success("推出成功");
+        return R.success("退出成功");
     }
+
+    /*
+    新增员工
+     */
+    @PostMapping()
+    public R<String> add(HttpServletRequest request,@RequestBody Employee employee){
+
+        //一开始给新增的员工设置初始化密码123456，并用md5加密
+        employee.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
+        employee.setCreateTime(LocalDateTime.now());
+        employee.setUpdateTime(LocalDateTime.now());
+
+        //获得创造者的id
+        Long empId = (Long) request.getSession().getAttribute("employee");
+        employee.setCreateUser(empId);
+        employee.setUpdateUser(empId);
+        //mybatis 添加方法
+        employeeService.save(employee);
+        return R.success("新增员工成功");
+    }
+    /*
+     *员工信息分页
+     *page 当前页数
+     *page Size 当前页可以存放的数据
+     *name 根据name查询员工的信息
+     */
+     @GetMapping("/page")
+    public R<Page> page(int page,int pageSize, String name){
+         //log.info("page={},pageSize={},name={}",page,pageSize,name);
+         //构造分页器
+         Page pageInfo = new Page(page,pageSize);
+         //构造条件构造器
+         //这段代码的作用是根据name字段进行模糊查询，如果name不为空，则添加模糊查询条件；如果name为空，则不添加模糊查询条件。
+         LambdaQueryWrapper<Employee> queryWrapper = new LambdaQueryWrapper();
+         queryWrapper.like(StringUtils.isNotBlank(name),Employee::getName,name);
+         //添加一个排序
+         queryWrapper.orderByDesc(Employee::getUpdateTime);
+         //执行查询
+         employeeService.page(pageInfo,queryWrapper);
+
+         return R.success(pageInfo);
+
+     }
+     /*
+     根据id修改员工信息
+      */
+    @PutMapping
+    public R<String> update(HttpServletRequest request,@RequestBody Employee employee)
+    {
+        log.info(employee.toString());
+        Long empId = (long) request.getSession().getAttribute("employee");
+        employee.setUpdateTime(LocalDateTime.now());
+        employee.setUpdateUser(empId);
+        employeeService.updateById(employee);
+        return R.success("员工信息修改成功");
+    }
+    /*
+    根据id返回employee信息
+     */
+
+    @GetMapping("/{id}")
+    public R<Employee> getById(@PathVariable Long id) {
+        Employee employee = employeeService.getById(id);
+        if (employee != null) {
+            return R.success(employee);
+        }
+        return R.error("没有查询到该员工信息");
+    }
+
+
+
 
 
 }
