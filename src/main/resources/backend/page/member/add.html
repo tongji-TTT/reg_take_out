@@ -133,7 +133,7 @@
         created() {
           this.id = requestUrlParam('id')
           this.actionType = this.id ? 'edit' : 'add'
-          if (this.id) {
+          if (this.id) {//如果后面跟的是id那么需要init()
             this.init()
           }
         },

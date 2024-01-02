@@ -136,7 +136,7 @@ public class EmployeeController {
     根据id返回employee信息
      */
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id}")//路径变量
     public R<Employee> getById(@PathVariable Long id) {
         Employee employee = employeeService.getById(id);
         if (employee != null) {
