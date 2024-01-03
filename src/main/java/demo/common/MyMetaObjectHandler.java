@@ -29,6 +29,5 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
     public void updateFill(MetaObject metaObject) {
         metaObject.setValue("updateTime", LocalDateTime.now());
         metaObject.setValue("updateUser",BaseContext.getCurrentId());
-
     }
 }

@@ -85,13 +85,6 @@ public class EmployeeController {
 
         //一开始给新增的员工设置初始化密码123456，并用md5加密
         employee.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
-        employee.setCreateTime(LocalDateTime.now());
-        employee.setUpdateTime(LocalDateTime.now());
-
-        //获得创造者的id
-        Long empId = (Long) request.getSession().getAttribute("employee");
-        employee.setCreateUser(empId);
-        employee.setUpdateUser(empId);
         //mybatis 添加方法
         employeeService.save(employee);
         return R.success("新增员工成功");
@@ -126,9 +119,6 @@ public class EmployeeController {
     public R<String> update(HttpServletRequest request,@RequestBody Employee employee)
     {
         log.info(employee.toString());
-        Long empId = (long) request.getSession().getAttribute("employee");
-        employee.setUpdateTime(LocalDateTime.now());
-        employee.setUpdateUser(empId);
         employeeService.updateById(employee);
         return R.success("员工信息修改成功");
     }
