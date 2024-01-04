@@ -29,17 +29,6 @@ public class CategoryController {
         return R.success("新增分类成功");
     }
 
-//    @GetMapping("/page")
-//    public R<Page> page(int page ,int pageSize){
-//        //分页器
-//        Page<Category> categoryPage = new Page<>(page,pageSize);
-//        //条件构造器
-//        LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
-//        queryWrapper.orderByAsc(Category::getSort);
-//        categoryService.page(categoryPage,queryWrapper);
-//        return R.success(categoryPage);
-//
-//    }
 
     @GetMapping("/page")
     public R<Page> page(int page,int pageSize){
@@ -52,6 +41,12 @@ public class CategoryController {
         queryWrapper.orderByAsc(Category::getSort);
         categoryService.page(categoryPage,queryWrapper);
         return R.success(categoryPage);
+    }
+
+    @DeleteMapping()
+    public R<String> delete(@RequestParam("ids") Long id){
+        categoryService.remove(id);
+        return R.success("分类信息删除成功");
     }
 
 }
