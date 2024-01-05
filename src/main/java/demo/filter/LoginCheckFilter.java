@@ -40,7 +40,8 @@ public class LoginCheckFilter implements Filter {
                 "/front/**",
                 "/swagger-resources/**",
                 "/swagger-ui/**",
-                "/v3/**"
+                "/v3/**",
+                "/common/**"
         };
         //判断本次请求是否需要处理
         boolean check = check(urls,requestURL);
