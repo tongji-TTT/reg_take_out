@@ -1,5 +1,6 @@
 package demo.serivce.Impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import demo.dto.DishDto;
 import demo.entity.Dish;
@@ -8,6 +9,7 @@ import demo.mapper.DishMapper;
 import demo.serivce.DishFlavorService;
 import demo.serivce.DishService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,6 +43,45 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
 
         //把菜品口味的数据到口味表 dish_flavor  注意dish_flavor只是封装了name value 并没有封装dishId(从前端传过来的数据发现的,然而数据库又需要这个数据)
         dishFlavorService.saveBatch(dishDto.getFlavors()); //这个方法是批量保存
+
+    }
+
+    @Override
+    public DishDto getByIdWithFlavor(Long id) {
+
+        Dish dish =this.getById(id);
+
+        //口味查询
+        LambdaQueryWrapper<DishFlavor>queryWrapper=new LambdaQueryWrapper<>();
+        queryWrapper.eq(DishFlavor::getDishId,dish.getId());
+        List<DishFlavor> list = dishFlavorService.list(queryWrapper);
+
+        DishDto dishDto = new DishDto();
+        BeanUtils.copyProperties(dish,dishDto);
+        dishDto.setFlavors(list);
+        return dishDto;
+    }
+
+    @Override
+    @Transactional
+    public void updateWithFlavor(DishDto dishDto) {
+        //更新dish表的基本信息  因为这里的dishDto是dish的子类
+        this.updateById(dishDto);
+
+        //更新口味信息---》先清理再重新插入口味信息
+        //清理当前菜品对应口味数据---dish_flavor表的delete操作
+        LambdaQueryWrapper<DishFlavor> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(DishFlavor::getDishId,dishDto.getId());
+        dishFlavorService.remove(queryWrapper);
+
+        //添加当前提交过来的口味数据---dish_flavor表的insert操作
+        List<DishFlavor>list = dishDto.getFlavors();
+        log.info(String.valueOf(list));
+        list = list.stream().map((item) -> {
+            item.setDishId(dishDto.getId());
+            return item;
+        }).collect(Collectors.toList());
+        dishFlavorService.saveBatch(list);
 
     }
 }
