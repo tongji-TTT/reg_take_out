@@ -92,4 +92,12 @@ public class DishController {
         return R.success("修改成功");
     }
 
+    @PostMapping("/status/{status}")
+    public R<String> status(@PathVariable Integer status,@RequestParam List<Long> ids){
+
+//        log.info("{}",status);
+//        log.info("{}",ids);
+        return dishService.changeStatusById(status,ids);
+    }
+
 }

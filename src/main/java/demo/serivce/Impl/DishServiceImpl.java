@@ -2,6 +2,7 @@ package demo.serivce.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import demo.common.R;
 import demo.dto.DishDto;
 import demo.entity.Dish;
 import demo.entity.DishFlavor;
@@ -83,5 +84,18 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
         }).collect(Collectors.toList());
         dishFlavorService.saveBatch(list);
 
+    }
+
+    @Override
+    public R<String> changeStatusById(Integer status, List<Long> ids) {
+        for(Long id :ids)
+        {
+            Dish dish = this.getById(id);
+            if(dish !=null){
+                dish.setStatus(status);
+                this.updateById(dish);
+            }
+        }
+        return R.success("修改成功");
     }
 }
